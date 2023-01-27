@@ -75,7 +75,9 @@ def count_notebook_servers(data: list):
     return server_count
 
 
-def compute_durations(users_start_times: Dict[str, datetime.datetime], data: list) -> List[tuple[str, int]]:
+def compute_durations(
+    users_start_times: Dict[str, datetime.datetime], data: list
+) -> List[tuple[str, int]]:
     current_users = {user["name"] for user in data}
     previous_users = set(users_start_times)
     dropped_users = previous_users - current_users
@@ -93,7 +95,9 @@ def compute_durations(users_start_times: Dict[str, datetime.datetime], data: lis
         if user["name"] in new_users:
             # assumes no named servers
             server = user["servers"][""]
-            users_start_times[user["name"]] = datetime.datetime.strptime(server["started"], DATE_FORMAT) 
+            users_start_times[user["name"]] = datetime.datetime.strptime(
+                server["started"], DATE_FORMAT
+            )
 
     return users_durations
 
@@ -134,7 +138,16 @@ async def main():
             users_durations = compute_durations(users_start_times, data)
 
             for user_name, duration in users_durations:
-                azlogger.info("duration %d", duration, extra={"custom_dimensions": {"duration": duration, "user_name": user_name}})
+                azlogger.info(
+                    "duration %d",
+                    duration,
+                    extra={
+                        "custom_dimensions": {
+                            "duration": duration,
+                            "user_name": user_name,
+                        }
+                    },
+                )
 
             logger.debug("Sleeping for %d", INTERVAL)
             await asyncio.sleep(INTERVAL)
